@@ -43,18 +43,18 @@ jobs:
         # curl -LR -o dist/chunzhen.txt "https://raw.githubusercontent.com/metowolf/iplist/master/data/country/CN.txt"
         cat IPList/CN2.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/CN-ip-cidr.txt
         cat IPList/JP.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/JP-ip-cidr.txt
+        cat IPList/US.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/US-ip-cidr.txt
 
     # - name: Merge and IP lists and remove duplicates
     #   run: |
     #     awk 'FNR==1{print ""}{print}' dist/*.txt > dist/merge.txt
-    #     awk '!seen[$0]++' dist/merge.txt > dist/CN-ip-cidr.txt
+    #     awk '!seen[$0]++' dist/merge.txt > dist/ip-cidr.txt
 
     - name: Generate GeoIP2 database
       run: |
         CURRENT_DIR=$(pwd)
         cd dist
-        ./ipip2mmdb -s ./CN-ip-cidr.txt -d Country.mmdb
-        ./ipip2mmdb -s ./JP-ip-cidr.txt -d Country.mmdb
+        ./ipip2mmdb -scn ./CN-ip-cidr.txt -sjp ./JP-ip-cidr.txt -sus ./US-ip-cidr.txt -d Country.mmdb
         cd $CURRENT_DIR
 
     - name: Push artifacts to release branch

@@ -58,7 +58,9 @@ import (
 		//},
 
 var (
-	srcFile string
+	srcCNFile string
+	srcJPFile string
+	srcUSFile string
 	dstFile string
 	databaseType string
 	cnRecord = mmdbtype.Map{
@@ -78,10 +80,46 @@ var (
 			},
 		},
 	}
+	jpRecord = mmdbtype.Map{
+		"country": mmdbtype.Map{
+			"geoname_id":           mmdbtype.Uint32(1861060),
+			"is_in_european_union": mmdbtype.Bool(false),
+			"iso_code":             mmdbtype.String("JP"),
+			"names": mmdbtype.Map{
+				"de":    mmdbtype.String("Japan"),
+				"en":    mmdbtype.String("Japan"),
+				"es":    mmdbtype.String("Japón"),
+				"fr":    mmdbtype.String("Japon"),
+				"ja":    mmdbtype.String("日本"),
+				"pt-BR": mmdbtype.String("Japão"),
+				"ru":    mmdbtype.String("Япония"),
+				"zh-CN": mmdbtype.String("日本"),
+			},
+		},
+	}
+	usRecord = mmdbtype.Map{
+		"country": mmdbtype.Map{
+			"geoname_id":           mmdbtype.Uint32(6252001),
+			"is_in_european_union": mmdbtype.Bool(false),
+			"iso_code":             mmdbtype.String("US"),
+			"names": mmdbtype.Map{
+				"de":    mmdbtype.String("vereinigte Staaten von Amerika"),
+				"en":    mmdbtype.String("United States"),
+				"es":    mmdbtype.String("Estados Unidos de America"),
+				"fr":    mmdbtype.String("les États-Unis d'Amérique"),
+				"ja":    mmdbtype.String("アメリカ"),
+				"pt-BR": mmdbtype.String("Estados Unidos da América"),
+				"ru":    mmdbtype.String("Соединенные Штаты Америки"),
+				"zh-CN": mmdbtype.String("美国"),
+			},
+		},
+	}
 )
 
 func init()  {
-	flag.StringVar(&srcFile, "s", "ipip_cn.txt", "specify source ip list file")
+	flag.StringVar(&srcCNFile, "scn", "ipip_cn.txt", "specify source ip list file")
+	flag.StringVar(&srcJPFile, "sjp", "ipip_jp.txt", "specify source ip list file")
+	flag.StringVar(&srcUSFile, "sus", "ipip_us.txt", "specify source ip list file")
 	flag.StringVar(&dstFile, "d", "Country.mmdb", "specify destination mmdb file")
 	flag.StringVar(&databaseType,"t", "GeoIP2-Country", "specify MaxMind database type")
 	flag.Parse()
@@ -98,8 +136,8 @@ func main()  {
 		log.Fatalf("fail to new writer %v\n", err)
 	}
 
-	var ipTxtList []string
-	fh, err := os.Open(srcFile)
+	var ipTxtListCN []string
+	fh, err := os.Open(srcCNFile)
 	if err != nil {
 		log.Fatalf("fail to open %s\n", err)
 	}
@@ -107,12 +145,52 @@ func main()  {
 	scanner.Split(bufio.ScanLines)
 
 	for scanner.Scan() {
-		ipTxtList = append(ipTxtList, scanner.Text())
+		ipTxtListCN = append(ipTxtListCN, scanner.Text())
 	}
 
-	ipList := parseCIDRs(ipTxtList)
-	for _, ip := range ipList {
+	ipListJPCN := parseCIDRs(ipTxtListCN)
+	for _, ip := range ipListJPCN {
 		err = writer.Insert(ip, cnRecord)
+		if err != nil {
+			log.Fatalf("fail to insert to writer %v\n", err)
+		}
+	}
+
+	var ipTxtListJP []string
+	fh, err := os.Open(srcJPFile)
+	if err != nil {
+		log.Fatalf("fail to open %s\n", err)
+	}
+	scanner := bufio.NewScanner(fh)
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		ipTxtListJP = append(ipTxtListJP, scanner.Text())
+	}
+
+	ipListJP := parseCIDRs(ipTxtListJP)
+	for _, ip := range ipListJP {
+		err = writer.Insert(ip, jpRecord)
+		if err != nil {
+			log.Fatalf("fail to insert to writer %v\n", err)
+		}
+	}
+
+	var ipTxtListUS []string
+	fh, err := os.Open(srcCNFile)
+	if err != nil {
+		log.Fatalf("fail to open %s\n", err)
+	}
+	scanner := bufio.NewScanner(fh)
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		ipTxtListUS = append(ipTxtListUS, scanner.Text())
+	}
+
+	ipListUS := parseCIDRs(ipTxtListUS)
+	for _, ip := range ipListUS {
+		err = writer.Insert(ip, usRecord)
 		if err != nil {
 			log.Fatalf("fail to insert to writer %v\n", err)
 		}
