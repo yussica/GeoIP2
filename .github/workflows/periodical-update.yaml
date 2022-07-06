@@ -71,11 +71,13 @@ jobs:
 
         cp -rf dist/CN-ip-cidr.txt ./
         cp -rf dist/JP-ip-cidr.txt ./
+        cp -rf dist/US-ip-cidr.txt ./
         cp -rf dist/Country.mmdb ./
 
         git add Country.mmdb
         git add CN-ip-cidr.txt
         git add JP-ip-cidr.txt
+        git add US-ip-cidr.txt
         git commit -am "Updated at $(date)"
 
         git branch -D release
