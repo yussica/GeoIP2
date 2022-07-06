@@ -157,11 +157,11 @@ func main()  {
 	}
 
 	var ipTxtListJP []string
-	fh, err := os.Open(srcJPFile)
+	fh, err = os.Open(srcJPFile)
 	if err != nil {
 		log.Fatalf("fail to open %s\n", err)
 	}
-	scanner := bufio.NewScanner(fh)
+	scanner = bufio.NewScanner(fh)
 	scanner.Split(bufio.ScanLines)
 
 	for scanner.Scan() {
@@ -177,11 +177,11 @@ func main()  {
 	}
 
 	var ipTxtListUS []string
-	fh, err := os.Open(srcCNFile)
+	fh, err = os.Open(srcCNFile)
 	if err != nil {
 		log.Fatalf("fail to open %s\n", err)
 	}
-	scanner := bufio.NewScanner(fh)
+	scanner = bufio.NewScanner(fh)
 	scanner.Split(bufio.ScanLines)
 
 	for scanner.Scan() {
