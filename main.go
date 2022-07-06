@@ -177,7 +177,7 @@ func main()  {
 	}
 
 	var ipTxtListUS []string
-	fh, err = os.Open(srcCNFile)
+	fh, err = os.Open(srcUSFile)
 	if err != nil {
 		log.Fatalf("fail to open %s\n", err)
 	}
