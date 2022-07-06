@@ -39,16 +39,17 @@ jobs:
 
     - name: Copy IP lists
       run: |
-        # curl -LR -o dist/ipip_net.txt "https://raw.githubusercontent.com/17mon/china_ip_list/master/china_ip_list.txt"
-        # curl -LR -o dist/chunzhen.txt "https://raw.githubusercontent.com/metowolf/iplist/master/data/country/CN.txt"
-        cat IPList/CN2.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/CN-ip-cidr.txt
+        curl -LR -o dist/cnsrc_ipip_net.txt "https://raw.githubusercontent.com/17mon/china_ip_list/master/china_ip_list.txt"
+        curl -LR -o dist/cnsrc_chunzhen.txt "https://raw.githubusercontent.com/metowolf/iplist/master/data/country/CN.txt"
+        cat IPList/CN.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/cnsrc_CN-ip-cidr.txt
+        cat IPList/CN2.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/cnsrc_CN2-ip-cidr.txt
         cat IPList/JP.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/JP-ip-cidr.txt
         cat IPList/US.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/US-ip-cidr.txt
 
-    # - name: Merge and IP lists and remove duplicates
-    #   run: |
-    #     awk 'FNR==1{print ""}{print}' dist/*.txt > dist/merge.txt
-    #     awk '!seen[$0]++' dist/merge.txt > dist/ip-cidr.txt
+    - name: Merge and IP lists and remove duplicates
+      run: |
+        awk 'FNR==1{print ""}{print}' dist/cnsrc_*.txt > dist/merge.txt
+        awk '!seen[$0]++' dist/merge.txt > dist/CN-ip-cidr.txt
 
     - name: Generate GeoIP2 database
       run: |
