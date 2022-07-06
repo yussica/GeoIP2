@@ -148,6 +148,7 @@ func main()  {
 		ipTxtListCN = append(ipTxtListCN, scanner.Text())
 	}
 
+	log.Print("CN start to parse to CIDR\n")
 	ipListJPCN := parseCIDRs(ipTxtListCN)
 	for _, ip := range ipListJPCN {
 		err = writer.Insert(ip, cnRecord)
@@ -168,6 +169,7 @@ func main()  {
 		ipTxtListJP = append(ipTxtListJP, scanner.Text())
 	}
 
+	log.Print("JP start to parse to CIDR\n")
 	ipListJP := parseCIDRs(ipTxtListJP)
 	for _, ip := range ipListJP {
 		err = writer.Insert(ip, jpRecord)
@@ -188,6 +190,7 @@ func main()  {
 		ipTxtListUS = append(ipTxtListUS, scanner.Text())
 	}
 
+	log.Print("US start to parse to CIDR\n")
 	ipListUS := parseCIDRs(ipTxtListUS)
 	for _, ip := range ipListUS {
 		err = writer.Insert(ip, usRecord)
