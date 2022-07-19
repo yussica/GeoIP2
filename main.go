@@ -56,11 +56,12 @@ import (
 		//"is_satellite_provider":mmdbtype.Bool(false),
 		//},
 		//},
-
+//http://www.geonames.org/
 var (
 	srcCNFile string
 	srcJPFile string
 	srcUSFile string
+	srcHKFile string
 	dstFile string
 	databaseType string
 	cnRecord = mmdbtype.Map{
@@ -114,12 +115,30 @@ var (
 			},
 		},
 	}
+	hkRecord = mmdbtype.Map{
+		"country": mmdbtype.Map{
+			"geoname_id":           mmdbtype.Uint32(1819729),
+			"is_in_european_union": mmdbtype.Bool(false),
+			"iso_code":             mmdbtype.String("HK"),
+			"names": mmdbtype.Map{
+				"de":    mmdbtype.String("Hongkong"),
+				"en":    mmdbtype.String("Hong Kong"),
+				"es":    mmdbtype.String("Hong Kong"),
+				"fr":    mmdbtype.String("Hong Kong"),
+				"ja":    mmdbtype.String("香港"),
+				"pt-BR": mmdbtype.String("Hong Kong"),
+				"ru":    mmdbtype.String("Гонконг"),
+				"zh-CN": mmdbtype.String("香港"),
+			},
+		},
+	}
 )
 
 func init()  {
 	flag.StringVar(&srcCNFile, "scn", "ipip_cn.txt", "specify source ip list file")
 	flag.StringVar(&srcJPFile, "sjp", "ipip_jp.txt", "specify source ip list file")
 	flag.StringVar(&srcUSFile, "sus", "ipip_us.txt", "specify source ip list file")
+	flag.StringVar(&srcHKFile, "shk", "ipip_hk.txt", "specify source ip list file")
 	flag.StringVar(&dstFile, "d", "Country.mmdb", "specify destination mmdb file")
 	flag.StringVar(&databaseType,"t", "GeoIP2-Country", "specify MaxMind database type")
 	flag.Parse()
@@ -149,8 +168,8 @@ func main()  {
 	}
 
 	log.Print("CN start to parse to CIDR\n")
-	ipListJPCN := parseCIDRs(ipTxtListCN)
-	for _, ip := range ipListJPCN {
+	ipListCN := parseCIDRs(ipTxtListCN)
+	for _, ip := range ipListCN {
 		err = writer.Insert(ip, cnRecord)
 		if err != nil {
 			log.Fatalf("fail to insert to writer %v\n", err)
@@ -194,6 +213,27 @@ func main()  {
 	ipListUS := parseCIDRs(ipTxtListUS)
 	for _, ip := range ipListUS {
 		err = writer.Insert(ip, usRecord)
+		if err != nil {
+			log.Fatalf("fail to insert to writer %v\n", err)
+		}
+	}
+
+	var ipTxtListHK []string
+	fh, err := os.Open(srcHKFile)
+	if err != nil {
+		log.Fatalf("fail to open %s\n", err)
+	}
+	scanner := bufio.NewScanner(fh)
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		ipTxtListHK = append(ipTxtListHK, scanner.Text())
+	}
+
+	log.Print("HK start to parse to CIDR\n")
+	ipListHK := parseCIDRs(ipTxtListHK)
+	for _, ip := range ipListHK {
+		err = writer.Insert(ip, hkRecord)
 		if err != nil {
 			log.Fatalf("fail to insert to writer %v\n", err)
 		}

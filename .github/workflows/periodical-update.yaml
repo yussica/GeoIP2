@@ -45,6 +45,7 @@ jobs:
         cat IPList/CN2.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/cnsrc_CN2-ip-cidr.txt
         cat IPList/JP.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/JP-ip-cidr.txt
         cat IPList/US.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/US-ip-cidr.txt
+        cat IPList/HK.list| sed 's/IP-CIDR,//g' | sed 's/^#.*//g' | sed '/^$/d' > ./dist/HK-ip-cidr.txt
 
     - name: Merge and IP lists and remove duplicates
       run: |
@@ -55,7 +56,7 @@ jobs:
       run: |
         CURRENT_DIR=$(pwd)
         cd dist
-        ./ipip2mmdb -scn ./CN-ip-cidr.txt -sjp ./JP-ip-cidr.txt -sus ./US-ip-cidr.txt -d Country.mmdb
+        ./ipip2mmdb -scn ./CN-ip-cidr.txt -sjp ./JP-ip-cidr.txt -sus ./US-ip-cidr.txt ./HK-ip-cidr.txt -d Country.mmdb
         cd $CURRENT_DIR
 
     - name: Push artifacts to release branch
@@ -72,12 +73,14 @@ jobs:
         cp -rf dist/CN-ip-cidr.txt ./
         cp -rf dist/JP-ip-cidr.txt ./
         cp -rf dist/US-ip-cidr.txt ./
+        cp -rf dist/HK-ip-cidr.txt ./
         cp -rf dist/Country.mmdb ./
 
         git add Country.mmdb
         git add CN-ip-cidr.txt
         git add JP-ip-cidr.txt
         git add US-ip-cidr.txt
+        git add HK-ip-cidr.txt
         git commit -am "Updated at $(date)"
 
         git branch -D release
