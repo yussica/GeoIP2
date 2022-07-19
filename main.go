@@ -219,11 +219,11 @@ func main()  {
 	}
 
 	var ipTxtListHK []string
-	fh, err := os.Open(srcHKFile)
+	fh, err = os.Open(srcHKFile)
 	if err != nil {
 		log.Fatalf("fail to open %s\n", err)
 	}
-	scanner := bufio.NewScanner(fh)
+	scanner = bufio.NewScanner(fh)
 	scanner.Split(bufio.ScanLines)
 
 	for scanner.Scan() {
