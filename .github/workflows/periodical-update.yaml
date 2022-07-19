@@ -56,7 +56,7 @@ jobs:
       run: |
         CURRENT_DIR=$(pwd)
         cd dist
-        ./ipip2mmdb -scn ./CN-ip-cidr.txt -sjp ./JP-ip-cidr.txt -sus ./US-ip-cidr.txt ./HK-ip-cidr.txt -d Country.mmdb
+        ./ipip2mmdb -scn ./CN-ip-cidr.txt -sjp ./JP-ip-cidr.txt -sus ./US-ip-cidr.txt -shk ./HK-ip-cidr.txt -d Country.mmdb
         cd $CURRENT_DIR
 
     - name: Push artifacts to release branch
