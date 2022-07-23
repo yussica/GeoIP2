@@ -144,7 +144,7 @@ func init()  {
 	flag.Parse()
 }
 
-func addGEOIP(writer *mmdbwriter.Tree,srcFile string, record mmdbtype.Map) {
+func addGEOIP(writer *mmdbwriter.Tree, srcFile string, record mmdbtype.Map) {
 	var ipTxtList []string
 	fh, err := os.Open(srcFile)
 	if err != nil {
