@@ -144,6 +144,29 @@ func init()  {
 	flag.Parse()
 }
 
+func addGEOIP(writer *mmdbwriter.Tree,srcFile string, record mmdbtype.Map) {
+	var ipTxtList []string
+	fh, err := os.Open(srcFile)
+	if err != nil {
+		log.Fatalf("fail to open %s\n", err)
+	}
+	scanner := bufio.NewScanner(fh)
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		ipTxtList = append(ipTxtList, scanner.Text())
+	}
+
+	log.Printf("%v start to parse to CIDR\n", srcFile)
+	ipListHK := parseCIDRs(ipTxtList)
+	for _, ip := range ipListHK {
+		err = writer.Insert(ip, record)
+		if err != nil {
+			log.Fatalf("fail to insert to writer %v\n", err)
+		}
+	}
+}
+
 func main()  {
 	writer, err := mmdbwriter.New(
 		mmdbwriter.Options{
@@ -155,89 +178,10 @@ func main()  {
 		log.Fatalf("fail to new writer %v\n", err)
 	}
 
-	var ipTxtListCN []string
-	fh, err := os.Open(srcCNFile)
-	if err != nil {
-		log.Fatalf("fail to open %s\n", err)
-	}
-	scanner := bufio.NewScanner(fh)
-	scanner.Split(bufio.ScanLines)
-
-	for scanner.Scan() {
-		ipTxtListCN = append(ipTxtListCN, scanner.Text())
-	}
-
-	log.Print("CN start to parse to CIDR\n")
-	ipListCN := parseCIDRs(ipTxtListCN)
-	for _, ip := range ipListCN {
-		err = writer.Insert(ip, cnRecord)
-		if err != nil {
-			log.Fatalf("fail to insert to writer %v\n", err)
-		}
-	}
-
-	var ipTxtListJP []string
-	fh, err = os.Open(srcJPFile)
-	if err != nil {
-		log.Fatalf("fail to open %s\n", err)
-	}
-	scanner = bufio.NewScanner(fh)
-	scanner.Split(bufio.ScanLines)
-
-	for scanner.Scan() {
-		ipTxtListJP = append(ipTxtListJP, scanner.Text())
-	}
-
-	log.Print("JP start to parse to CIDR\n")
-	ipListJP := parseCIDRs(ipTxtListJP)
-	for _, ip := range ipListJP {
-		err = writer.Insert(ip, jpRecord)
-		if err != nil {
-			log.Fatalf("fail to insert to writer %v\n", err)
-		}
-	}
-
-	var ipTxtListUS []string
-	fh, err = os.Open(srcUSFile)
-	if err != nil {
-		log.Fatalf("fail to open %s\n", err)
-	}
-	scanner = bufio.NewScanner(fh)
-	scanner.Split(bufio.ScanLines)
-
-	for scanner.Scan() {
-		ipTxtListUS = append(ipTxtListUS, scanner.Text())
-	}
-
-	log.Print("US start to parse to CIDR\n")
-	ipListUS := parseCIDRs(ipTxtListUS)
-	for _, ip := range ipListUS {
-		err = writer.Insert(ip, usRecord)
-		if err != nil {
-			log.Fatalf("fail to insert to writer %v\n", err)
-		}
-	}
-
-	var ipTxtListHK []string
-	fh, err = os.Open(srcHKFile)
-	if err != nil {
-		log.Fatalf("fail to open %s\n", err)
-	}
-	scanner = bufio.NewScanner(fh)
-	scanner.Split(bufio.ScanLines)
-
-	for scanner.Scan() {
-		ipTxtListHK = append(ipTxtListHK, scanner.Text())
-	}
-
-	log.Print("HK start to parse to CIDR\n")
-	ipListHK := parseCIDRs(ipTxtListHK)
-	for _, ip := range ipListHK {
-		err = writer.Insert(ip, hkRecord)
-		if err != nil {
-			log.Fatalf("fail to insert to writer %v\n", err)
-		}
-	}
+	addGEOIP(writer, srcCNFile, cnRecord)
+	addGEOIP(writer, srcJPFile, jpRecord)
+	addGEOIP(writer, srcUSFile, usRecord)
+	addGEOIP(writer, srcHKFile, hkRecord)
 
 	outFh, err := os.Create(dstFile)
 	if err != nil {
